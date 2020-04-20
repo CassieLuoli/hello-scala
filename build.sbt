@@ -9,4 +9,5 @@ lazy val hello = (project in file("."))
     libraryDependencies += "com.eed3si9n" %% "gigahorse-okhttp" % "0.3.1",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % Test,
     releaseIgnoreUntrackedFiles := true,
+    publishArtifact := false
   )
