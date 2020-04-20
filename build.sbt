@@ -28,3 +28,29 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion,                      // : ReleaseStep
 //  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
 )
+releaseIgnoreUntrackedFiles := true
+
+commands += Command.command("prepareRelease")((state: State) => {
+  println("Preparing release...")
+  val extracted = Project extract state
+  var st = extracted.append(Seq(releaseProcess := Seq[ReleaseStep](
+    runClean,
+    checkSnapshotDependencies,
+    inquireVersions,
+    runTest,
+  )), state)
+  Command.process("release with-defaults", st)
+})
+
+commands += Command.command("completeRelease")((state: State) => {
+  println("Completing release...")
+  val extracted = Project extract state
+  val customState = extracted.append(Seq(releaseProcess := Seq[ReleaseStep](
+    inquireVersions,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )), state)
+  val newState = Command.process("release with-defaults", customState)
+  newState
+})
